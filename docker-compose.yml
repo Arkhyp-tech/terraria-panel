@@ -1,0 +1,60 @@
+name: terraria
+services:
+  terraria:
+    image: python:3.13-slim
+    container_name: terraria
+    restart: unless-stopped
+    stop_grace_period: 90s # time for the world to save when CasaOS stops the app
+    network_mode: bridge
+    working_dir: /data
+    command: ["python", "-u", "/data/panel.py"]
+    environment:
+      PANEL_PASSWORD: changeme
+      TZ: Europe/Lisbon
+    ports:
+      - target: 7777
+        published: "7777"
+        protocol: tcp
+      - target: 8080
+        published: "8777"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/terraria
+        target: /data
+    x-casaos:
+      envs:
+        - container: PANEL_PASSWORD
+          description:
+            en_us: Web panel password (any username works)
+        - container: TZ
+          description:
+            en_us: Time zone
+      ports:
+        - container: "7777"
+          description:
+            en_us: Terraria game port
+        - container: "8080"
+          description:
+            en_us: Web panel
+      volumes:
+        - container: /data
+          description:
+            en_us: Server files, worlds, serverconfig.txt and panel.py
+x-casaos:
+  architectures:
+    - amd64
+  main: terraria
+  author: self
+  developer: Re-Logic
+  category: Gaming
+  title:
+    en_us: Terraria
+  tagline:
+    en_us: Terraria server with a web console
+  description:
+    en_us: Vanilla Terraria dedicated server with a web panel for console commands, players, worlds and server settings.
+  icon: https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/terraria.png
+  scheme: http
+  port_map: "8777"
+  index: /
